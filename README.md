@@ -18,7 +18,7 @@ This repository contains the backend for a multi-agent system, featuring a Super
 │   ├── routing.py            # Request routing logic
 │   ├── worker_client.py      # Client for communicating with workers
 │   └── tests/                # Tests for the supervisor
-├── gemini_wrapper/           # Gemini-wrapper worker agent
+├── gemini_wrapper_agent/     # Gemini-wrapper worker agent (renamed for registry consistency)
 │   ├── __init__.py
 │   ├── app.py                # Main FastAPI app for the worker
 │   ├── client.py             # Logic for calling Gemini API or mock

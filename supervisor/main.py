@@ -6,6 +6,7 @@ from fastapi import FastAPI, Depends, HTTPException, Body
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional, List
+from datetime import datetime
 from pydantic import BaseModel
 
 from shared.models import RequestPayload, RequestResponse, User
@@ -116,10 +117,17 @@ async def submit_request(
     )
     
     # Check if we've been asking for clarification too many times
-    recent_clarifications = sum(
-        1 for msg in (conversation_history or [])[-MAX_CLARIFICATION_ATTEMPTS:]
-        if msg.get("intent_info", {}).get("is_ambiguous", False)
-    )
+    recent_clarifications = 0
+    for msg in (conversation_history or [])[-MAX_CLARIFICATION_ATTEMPTS:]:
+        if not isinstance(msg, dict):
+            continue
+        intent_info_obj = msg.get("intent_info") or {}
+        try:
+            if intent_info_obj.get("is_ambiguous", False):
+                recent_clarifications += 1
+        except Exception:
+            # Be defensive in case intent_info_obj is not a dict-like object
+            continue
     
     if recent_clarifications >= MAX_CLARIFICATION_ATTEMPTS:
         _logger.warning(f"User {user_id} has received {recent_clarifications} clarification requests. Proceeding with best guess.")
@@ -136,9 +144,22 @@ async def submit_request(
             "needs_clarification": False
         }
     else:
+        # Prepare payload for routing. If autoRoute is enabled, ensure there is
+        # no explicit agentId in the payload so intent identification runs.
+        routing_input = payload.dict()
+        if getattr(payload, 'autoRoute', False):
+            # Remove any agentId so routing.decide_agent treats this as an auto-route
+            routing_input.pop('agentId', None)
+            _logger.info(f"Auto-route enabled for user {user_id}; removing explicit agentId for routing")
+        else:
+            # Normalize empty-string agentId to None so it isn't treated as an explicit override
+            if routing_input.get('agentId') == "":
+                routing_input['agentId'] = None
+
+        _logger.debug(f"Routing input for user {user_id}: {routing_input}")
         # Get routing decision with intent identification
         routing_result = await routing.decide_agent(
-            payload, 
+            routing_input,
             registry.list_agents(),
             conversation_history
         )
@@ -152,6 +173,7 @@ async def submit_request(
         clarification_response = {
             "status": "clarification_needed",
             "message": "I need a bit more information to help you better.",
+            "response": "I need a bit more information to help you better.",
             "clarifying_questions": routing_result.get("clarifying_questions", []),
             "intent_info": intent_info,
             "suggestions": [
@@ -204,7 +226,24 @@ async def submit_request(
                 role="assistant",
                 content=error_message
             )
-            raise HTTPException(status_code=503, detail=error_message)
+            # Return a RequestResponse-shaped dict so the frontend can render
+            # the assistant-style message in the chat rather than receiving
+            # an HTTP error. Keep metadata consistent with other responses.
+            response_dict = {
+                "response": error_message,
+                "agentId": None,
+                "timestamp": datetime.utcnow(),
+                "error": {"code": "AGENT_OFFLINE", "message": error_message},
+                "metadata": {
+                    "identified_agent": None,
+                    "agent_name": None,
+                    "confidence": intent_info.get("confidence", 0.0),
+                    "reasoning": intent_info.get("reasoning", ""),
+                    "extracted_params": intent_info.get("extracted_params", {}),
+                    "conversation_length": len(conversation_history) if conversation_history else 0
+                }
+            }
+            return response_dict
         
         # Use the first healthy agent (primary choice)
         agent_id = healthy_agents[0]
@@ -239,42 +278,156 @@ async def submit_request(
                 role="assistant",
                 content=error_message
             )
-            raise HTTPException(status_code=503, detail=error_message)
+            # Return a RequestResponse-shaped dict with an explicit error
+            # message so the UI shows it inline as an assistant reply.
+            response_dict = {
+                "response": error_message,
+                "agentId": agent_id,
+                "timestamp": datetime.utcnow(),
+                "error": {"code": "AGENT_OFFLINE", "message": error_message},
+                "metadata": {
+                    "identified_agent": agent_id,
+                    "agent_name": agent.name if agent else agent_id,
+                    "confidence": intent_info.get("confidence", 0.0),
+                    "reasoning": intent_info.get("reasoning", ""),
+                    "extracted_params": intent_info.get("extracted_params", {}),
+                    "conversation_length": len(conversation_history) if conversation_history else 0
+                }
+            }
+            return response_dict
     
     # Build agent-specific payload
     agent_payload = routing.build_agent_payload(agent_id, payload.request, intent_info)
     
     # Update the payload with agent-specific format
     payload_dict = payload.dict()
-    payload_dict["agent_specific_data"] = agent_payload
+    # Ensure agentId is present for downstream RequestPayload validation
+    payload_dict["agentId"] = agent_id
+    # Merge agent-specific payload fields into the top-level payload so agents
+    # that expect e.g. a 'data' key (research_scout) will find it at task.parameters
+    if isinstance(agent_payload, dict):
+        # Avoid overwriting explicit top-level keys unintentionally
+        for k, v in agent_payload.items():
+            if k not in payload_dict or payload_dict.get(k) in (None, ""):
+                payload_dict[k] = v
     
     try:
         # Forward to selected agent
         _logger.info(f"Forwarding request to {agent_id} with confidence {intent_info.get('confidence', 0):.2f}")
         
-        # Convert back to RequestPayload for forwarding
-        forward_payload = RequestPayload(**payload_dict)
-        rr = await forward_to_agent(agent_id, forward_payload)
+        # Convert back to RequestPayload for forwarding and include agent-specific
+        # fields separately so they are not lost by Pydantic model serialization.
+        forward_payload = RequestPayload(**{k: v for k, v in payload_dict.items() if k in RequestPayload.__fields__})
+        rr = await forward_to_agent(agent_id, forward_payload, agent_specific=agent_payload)
         
+        # If the agent indicates it needs clarification, translate that
+        # into a supervisor-level clarification request to the user.
+        try:
+            rr_error = getattr(rr, 'error', None)
+            if rr_error and getattr(rr_error, 'code', None) == 'CLARIFICATION_NEEDED':
+                # Extract clarifying questions from error.details if present
+                clar_qs = []
+                example = None
+                required_format = None
+                try:
+                    import json as _json
+                    details = getattr(rr_error, 'details', None)
+                    if details:
+                        parsed = _json.loads(details)
+                        clar_qs = parsed.get('clarifying_questions', [])
+                        example = parsed.get('example')
+                        required_format = parsed.get('required_format')
+                except Exception:
+                    clar_qs = []
+
+                # Build a specific response that tells the user what to include
+                base_msg = getattr(rr_error, 'message', "I need more information to proceed.")
+                if example:
+                    response_text = f"{base_msg} For example: {example}"
+                elif required_format:
+                    response_text = f"{base_msg} Please send a request in this format: {required_format}"
+                else:
+                    response_text = base_msg
+
+                clarification_response = {
+                    "status": "clarification_needed",
+                    "message": base_msg,
+                    "response": response_text,
+                    "clarifying_questions": clar_qs,
+                    "example_request": example,
+                    "required_format": required_format,
+                    "intent_info": intent_info,
+                    "suggestions": [
+                        "Please be more specific about what you need",
+                        "Try mentioning the subject or topic you're working on",
+                        "Let me know what type of help you're looking for"
+                    ],
+                    "clarification_count": recent_clarifications + 1,
+                    "max_clarifications": MAX_CLARIFICATION_ATTEMPTS
+                }
+
+                # Store assistant clarification request
+                memory_manager.store_conversation_message(
+                    user_id=user_id,
+                    role="assistant",
+                    content=f"Clarification requested: {clarification_response['message']}",
+                    intent_info=intent_info
+                )
+
+                return clarification_response
+        except Exception:
+            # Be defensive: if anything goes wrong while inspecting rr, continue
+            pass
+        # If agent returned an error, normalize a human-readable response
+        # so the frontend does not show empty content.
+        response_content = None
+        try:
+            has_error = bool(getattr(rr, 'error', None))
+        except Exception:
+            has_error = False
+
+        if has_error:
+            err = rr.error
+            # Prefer a friendly message, then error.message, then error.code
+            friendly = getattr(err, 'message', None) or getattr(err, 'code', None) or "The agent failed to process the request."
+            response_content = friendly
+        else:
+            # Prefer explicit response string, else fallback to str(rr)
+            response_content = getattr(rr, 'response', None) or str(rr)
+
         # Store in memory if successful
-        if not rr.error:
+        if not has_error:
             memory_manager.store(agent_id, forward_payload, rr)
-        
-        # Get the response content
-        response_content = rr.response if hasattr(rr, 'response') else str(rr)
-        
-        # Store assistant response with intent info
+
+        # Ensure we never store a None content into conversation history
         memory_manager.store_conversation_message(
             user_id=user_id,
             role="assistant",
-            content=response_content,
+            content=response_content or "",
             agent_id=agent_id,
             intent_info=intent_info
         )
-        
-        # Add metadata to response
+
+        # Add metadata to response and ensure a `response` field exists
         response_dict = rr.dict() if hasattr(rr, 'dict') else {"response": str(rr)}
-        response_dict["metadata"] = {
+        if not response_dict.get("response"):
+            response_dict["response"] = response_content or ""
+
+        # Merge agent-provided metadata (executionTime, agentTrace, participatingAgents, cached)
+        # with supervisor-level metadata (identified_agent, confidence, reasoning, extracted_params).
+        incoming_meta = {}
+        try:
+            incoming_meta = response_dict.get("metadata") or {}
+        except Exception:
+            incoming_meta = {}
+
+        merged_meta = {
+            "executionTime": incoming_meta.get("executionTime") if incoming_meta.get("executionTime") is not None else None,
+            "agentTrace": incoming_meta.get("agentTrace") if incoming_meta.get("agentTrace") is not None else [],
+            "participatingAgents": incoming_meta.get("participatingAgents") if incoming_meta.get("participatingAgents") is not None else [],
+            "cached": incoming_meta.get("cached") if incoming_meta.get("cached") is not None else False,
+
+            # Supervisor-added context
             "identified_agent": agent_id,
             "agent_name": agent.name if agent else agent_id,
             "confidence": intent_info.get("confidence", 0.0),
@@ -282,7 +435,9 @@ async def submit_request(
             "extracted_params": intent_info.get("extracted_params", {}),
             "conversation_length": len(conversation_history) if conversation_history else 0
         }
-        
+
+        response_dict["metadata"] = merged_meta
+
         return response_dict
         
     except Exception as e:
@@ -299,10 +454,45 @@ async def submit_request(
 
 @app.get('/api/agent/{agent_id}/health')
 async def get_agent_health(agent_id: str, user: User = Depends(auth.require_auth)):
+    # Perform a live health check instead of returning possibly stale registry status
     agent = registry.get_agent(agent_id)
     if not agent:
         raise HTTPException(status_code=404, detail="Agent not found")
-    return {"status": agent.status}
+
+    try:
+        # Ask registry to perform live check and persist status
+        status = await registry.check_agent_live_status(agent_id)
+        return {"status": status}
+    except Exception as e:
+        _logger.error(f"Error checking health for {agent_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get('/api/supervisor/debug/last-agent-response')
+async def get_last_agent_response(agent_id: Optional[str] = None, user: User = Depends(auth.require_auth)):
+    """Return the last raw response captured from agents for debugging.
+
+    If `agent_id` is omitted, returns all stored entries (careful: may be large).
+    Protected by auth to prevent accidental exposure.
+    """
+    try:
+        from supervisor import worker_client
+        store = getattr(worker_client, 'LAST_RAW_AGENT_RESPONSES', None)
+    except Exception as e:
+        _logger.error(f"Unable to access worker_client debug store: {e}")
+        raise HTTPException(status_code=500, detail="Debug store unavailable")
+
+    if store is None:
+        raise HTTPException(status_code=404, detail="No debug data available")
+
+    if agent_id:
+        v = store.get(agent_id)
+        if not v:
+            raise HTTPException(status_code=404, detail="No recorded response for that agent")
+        return v
+
+    # Return full store (caller must be careful)
+    return {"count": len(store), "entries": store}
 
 @app.post('/api/supervisor/identify-intent')
 async def identify_intent_endpoint(

@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 import uuid
 
-from agents.gemini_wrapper.app import app
+from agents.gemini_wrapper_agent.app import app
 from shared.models import Task, TaskEnvelope
 
 client = TestClient(app)
@@ -31,9 +31,7 @@ def test_process_mock_request():
 
 @pytest.mark.asyncio
 async def test_ltm_caching():
-    # This test should interact with the LTM directly or through the endpoint
-    # to verify caching behavior.
-    from agents.gemini_wrapper import ltm
+    from agents.gemini_wrapper_agent import ltm
     
     test_input = "This is a test for LTM."
     test_output = "This is a cached output."

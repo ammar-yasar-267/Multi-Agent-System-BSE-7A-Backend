@@ -33,7 +33,7 @@ async def call_gemini_or_mock(input_text: str, model_override: str = None) -> di
     mode = get_mode()
     if mode == "mock":
         return {
-            "output": f"This is a mock response for the query: '{input_text}'",
+            "output": f"This is a mock response for the query: '{input_text}'. The mock response triggered because the Gemini API key is not configured.",
             "mock": True
         }
 
