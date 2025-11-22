@@ -1,0 +1,397 @@
+[
+  {
+<<<<<<< HEAD
+    "id": "gemini_wrapper_agent",
+    "name": "General Knowledge Assistant",
+    "url": "http://gemini-wrapper:5010",
+    "description": "Handles general knowledge questions, explanations, and conversations that don't require specialized educational tools. Use for: explaining concepts, answering 'what is' questions, general chat, and topics outside the learning system's specialized functions.",
+    "capabilities": [
+      "text-generation",
+      "conversation",
+      "general-qa",
+      "explanations"
+    ],
+    "keywords": [
+      "explain",
+      "what is",
+      "tell me about",
+      "describe",
+      "general",
+      "chat",
+      "conversation",
+      "how does",
+      "why"
+    ],
+    "status": "offline"
+  },
+  {
+    "id": "adaptive_quiz_master_agent",
+    "name": "Quiz Generation Specialist",
+    "url": "http://adaptive-quiz-agent:5011",
+    "description": "ONLY use for creating, generating, or making quizzes, tests, or practice questions. Specializes in: generating MCQs, true/false, short answer questions with specified difficulty levels and topics. Use when user wants to CREATE or GENERATE quiz questions, NOT for finding existing questions or predicting exam content.",
+    "capabilities": [
+      "quiz-generation",
+      "test-creation",
+      "practice-questions",
+      "mcq-generation",
+      "assessment-creation"
+    ],
+    "keywords": [
+      "quiz",
+      "test",
+      "create quiz",
+      "generate quiz",
+      "make quiz",
+      "practice questions",
+      "mcq",
+      "multiple choice",
+      "true false questions",
+      "generate questions"
+    ],
+    "status": "offline"
+  },
+  {
+    "id": "assignment_coach_agent",
+    "name": "Assignment Helper & Task Breakdown Specialist",
+    "url": "http://assignment-coach-agent:5012",
+    "description": "ONLY use when students need help UNDERSTANDING, BREAKING DOWN, or getting GUIDANCE on homework or assignments. Provides: task decomposition, resource suggestions, progress guidance, and assignment understanding. Use for: 'help with assignment', 'break down task', 'guide me through homework', NOT for quiz generation or checking plagiarism.",
+    "capabilities": [
+      "assignment-help",
+      "task-breakdown",
+      "homework-guidance",
+      "resource-suggestions",
+      "progress-tracking"
+    ],
+    "keywords": [
+      "assignment",
+      "homework",
+      "help with assignment",
+      "break down",
+      "task",
+      "project help",
+      "guide me",
+      "assignment guidance",
+      "understand assignment"
+    ],
+    "status": "offline"
+  },
+  {
+    "id": "plagiarism_prevention_agent",
+    "name": "Plagiarism Checker & Text Originality Improver",
+    "url": "http://plagiarism-agent:5013",
+    "description": "ONLY use for CHECKING text for plagiarism or REPHRASING content to improve originality. Specializes in: detecting copied content, comparing against databases, rephrasing while preserving meaning, generating plagiarism scores. Use for: 'check plagiarism', 'is this copied', 'rephrase', 'improve originality', 'paraphrase', NOT for general writing help.",
+    "capabilities": [
+      "plagiarism-detection",
+      "text-rephrasing",
+      "originality-analysis",
+      "paraphrasing",
+      "authenticity-checking"
+    ],
+    "keywords": [
+      "plagiarism",
+      "check plagiarism",
+      "copied",
+      "originality",
+      "rephrase",
+      "paraphrase",
+      "is this plagiarized",
+      "authenticity",
+      "improve originality"
+    ],
+    "status": "offline"
+  },
+  {
+    "id": "research_scout_agent",
+    "name": "Academic Research Paper Finder",
+    "url": "http://research-scout-agent:5014",
+    "description": "ONLY use for FINDING, SEARCHING, or LOCATING research papers, academic articles, journals, or case studies. Specializes in: searching academic databases, summarizing papers, finding recent publications. Use for: 'find papers', 'search articles', 'research on topic', 'literature review', 'case studies', NOT for creating citations or checking plagiarism.",
+    "capabilities": [
+      "research-search",
+      "paper-finding",
+      "article-search",
+      "literature-review",
+      "academic-search",
+      "case-study-finding"
+    ],
+    "keywords": [
+      "research",
+      "find papers",
+      "search papers",
+      "articles",
+      "research papers",
+      "case studies",
+      "literature review",
+      "find articles",
+      "academic sources",
+      "journals"
+    ],
+    "status": "healthy"
+  },
+  {
+    "id": "concept_reinforcement_agent",
+    "name": "Practice & Weak Topic Reinforcement Specialist",
+    "url": "http://concept-reinforcement-agent:5015",
+    "description": "ONLY use when students are STRUGGLING with specific topics and need MORE PRACTICE or REINFORCEMENT. Generates: flashcards, practice exercises, mini-tasks for weak areas. Use for: 'struggling with', 'need practice', 'weak in', 'reinforce', 'flashcards', NOT for initial learning or quiz generation.",
+    "capabilities": [
+      "practice-generation",
+      "concept-reinforcement",
+      "flashcards",
+      "weak-topic-practice",
+      "remedial-exercises"
+    ],
+    "keywords": [
+      "struggling",
+      "weak",
+      "need practice",
+      "practice",
+      "reinforce",
+      "flashcards",
+      "struggling with",
+      "need more practice",
+      "review",
+      "weak topics"
+    ],
+    "status": "offline"
+  },
+  {
+    "id": "citation_manager_agent",
+    "name": "Citation & Bibliography Generator",
+    "url": "http://citation-manager-agent:5016",
+    "description": "ONLY use for CREATING, GENERATING, or FORMATTING academic citations and bibliographies. Specializes in: APA, MLA, Chicago, Harvard styles. Use for: 'cite', 'citation', 'reference', 'bibliography', 'format reference', NOT for finding papers or checking plagiarism.",
+    "capabilities": [
+      "citation-generation",
+      "reference-formatting",
+      "bibliography-creation",
+      "apa-mla-chicago-formatting"
+    ],
+    "keywords": [
+      "citation",
+      "cite",
+      "reference",
+      "bibliography",
+      "APA",
+      "MLA",
+      "Chicago",
+      "Harvard",
+      "format reference",
+      "generate citation",
+      "create citation"
+    ],
+    "status": "offline"
+  },
+  {
+    "id": "peer_collaboration_agent",
+    "name": "Team Collaboration Analyzer",
+    "url": "http://peer-collaboration-agent:5017",
+    "description": "ONLY use for ANALYZING team discussions, group work, or collaboration patterns. Monitors: participation balance, communication quality, contribution levels. Use for: 'team discussion', 'group work', 'collaboration analysis', 'who is contributing', 'team feedback', NOT for individual assignments or learning.",
+    "capabilities": [
+      "team-analysis",
+      "collaboration-monitoring",
+      "participation-tracking",
+      "group-feedback",
+      "communication-analysis"
+    ],
+    "keywords": [
+      "team",
+      "group",
+      "collaboration",
+      "team discussion",
+      "group work",
+      "teamwork",
+      "who is contributing",
+      "participation",
+      "team analysis",
+      "group feedback"
+    ],
+    "status": "offline"
+  },
+  {
+    "id": "adaptive_flashcard_agent",
+    "name": "Adaptive Flashcard Creator",
+    "url": "http://adaptive-flashcard-agent:5018",
+    "description": "ONLY use for specifically creating FLASHCARDS for memorization and recall. Generates: adaptive flashcards based on performance, spaced repetition cards. Use for: 'create flashcards', 'flashcards for', 'study cards', 'memorize', NOT for general practice or quizzes.",
+    "capabilities": [
+      "flashcard-generation",
+      "memory-cards",
+      "spaced-repetition",
+      "recall-practice",
+      "adaptive-flashcards"
+    ],
+    "keywords": [
+      "flashcard",
+      "flashcards",
+      "create flashcards",
+      "study cards",
+      "memory cards",
+      "memorize",
+      "recall",
+      "spaced repetition"
+    ],
+    "status": "offline"
+  },
+  {
+    "id": "presentation_feedback_agent",
+    "name": "Presentation & Speech Analyzer",
+    "url": "http://presentation-feedback-agent:5019",
+    "description": "ONLY use for ANALYZING presentations, speeches, or talk transcripts. Provides: delivery feedback, confidence analysis, pacing review, material quality assessment. Use for: 'presentation feedback', 'analyze my speech', 'review my presentation', NOT for creating presentations or general writing feedback.",
+    "capabilities": [
+      "presentation-analysis",
+      "speech-feedback",
+      "delivery-coaching",
+      "transcript-analysis",
+      "public-speaking-feedback"
+    ],
+    "keywords": [
+      "presentation",
+      "speech",
+      "presentation feedback",
+      "analyze presentation",
+      "delivery",
+      "public speaking",
+      "transcript",
+      "analyze speech"
+    ],
+    "status": "offline"
+  },
+  {
+    "id": "lecture_insight_agent",
+    "name": "Lecture Audio Analyzer & Note Generator",
+    "url": "http://lecture-insight-agent:5020",
+    "description": "ONLY use for ANALYZING lecture recordings, class audio, or generating notes from lectures. Processes: audio transcription, key insight extraction, lecture summaries. Use for: 'analyze lecture', 'lecture recording', 'lecture notes', 'class audio', NOT for general note-taking or text summarization.",
+    "capabilities": [
+      "audio-analysis",
+      "lecture-transcription",
+      "lecture-summarization",
+      "note-generation",
+      "key-insight-extraction"
+    ],
+    "keywords": [
+      "lecture",
+      "recording",
+      "audio",
+      "lecture recording",
+      "class recording",
+      "lecture notes",
+      "analyze lecture",
+      "transcribe lecture",
+      "lecture summary"
+    ],
+    "status": "offline"
+  },
+  {
+    "id": "question_anticipator_agent",
+    "name": "Exam Question Predictor",
+    "url": "http://question-anticipator-agent:5021",
+    "description": "ONLY use for PREDICTING or ANTICIPATING likely exam questions based on syllabus and past papers. Analyzes: historical patterns, topic frequency, question trends. Use for: 'predict exam questions', 'what might come in exam', 'likely questions', 'analyze past papers', NOT for creating quizzes or practice questions.",
+    "capabilities": [
+      "exam-prediction",
+      "question-anticipation",
+      "pattern-analysis",
+      "syllabus-analysis",
+      "past-paper-analysis"
+    ],
+    "keywords": [
+      "predict",
+      "anticipate",
+      "exam questions",
+      "what might come",
+      "likely questions",
+      "past papers",
+      "exam prediction",
+      "syllabus analysis",
+      "question prediction"
+    ],
+    "status": "offline"
+  },
+  {
+    "id": "daily_revision_proctor_agent",
+    "name": "Daily Study Habit Tracker",
+    "url": "http://daily-revision-agent:5022",
+    "description": "ONLY use for TRACKING daily study habits, setting study reminders, or monitoring revision progress over time. Provides: progress tracking, study reminders, habit monitoring, routine suggestions. Use for: 'track my study', 'study reminders', 'monitor progress', 'daily revision', NOT for creating schedules or timetables.",
+    "capabilities": [
+      "progress-tracking",
+      "habit-monitoring",
+      "study-reminders",
+      "daily-tracking",
+      "routine-monitoring"
+    ],
+    "keywords": [
+      "daily",
+      "revision",
+      "track",
+      "monitor",
+      "progress",
+      "study habits",
+      "reminders",
+      "daily study",
+      "habit",
+      "track progress"
+    ],
+    "status": "offline"
+  },
+  {
+    "id": "study_scheduler_agent",
+    "name": "Study Timetable & Schedule Creator",
+    "url": "http://study-scheduler-agent:5023",
+    "description": "ONLY use for CREATING or GENERATING study timetables, schedules, or time management plans. Creates: personalized timetables, study schedules based on deadlines and subjects. Use for: 'create schedule', 'make timetable', 'study plan', 'organize time', NOT for tracking habits or setting reminders.",
+    "capabilities": [
+      "schedule-creation",
+      "timetable-generation",
+      "time-management",
+      "study-planning",
+      "deadline-organization"
+    ],
+    "keywords": [
+      "schedule",
+      "timetable",
+      "create schedule",
+      "make timetable",
+      "study plan",
+      "time management",
+      "organize time",
+      "plan my study",
+      "study schedule"
+    ],
+    "status": "offline"
+  },
+  {
+    "id": "exam_readiness_agent",
+    "name": "Exam Preparation Assessment Specialist",
+    "url": "http://exam-readiness-agent:5024",
+    "description": "ONLY use for ASSESSING exam readiness, creating mock exams, or evaluating preparation levels. Generates: comprehensive assessments, mock tests, readiness scores. Use for: 'am I ready', 'assess preparation', 'mock exam', 'readiness check', NOT for creating practice quizzes or predicting questions.",
+    "capabilities": [
+      "readiness-assessment",
+      "mock-exam-generation",
+      "preparation-evaluation",
+      "comprehensive-testing",
+      "readiness-scoring"
+    ],
+    "keywords": [
+      "exam readiness",
+      "ready",
+      "mock exam",
+      "assess",
+      "preparation",
+      "readiness",
+      "am I ready",
+      "evaluate preparation",
+      "mock test"
+    ],
+    "status": "offline"
+=======
+    "id": "gemini-wrapper",
+    "name": "Gemini Wrapper",
+    "url": "http://localhost:5010",
+    "description": "LLM wrapper for text generation",
+    "capabilities": ["text-generation"]
+  },
+
+  {
+    "id": "adaptive-quiz-master",
+    "name": "Adaptive Quiz Master",
+    "url": "http://localhost:5020",
+    "description": "Generates adaptive quizzes based on user performance",
+    "capabilities": ["quiz-generation", "performance-tracking", "adaptive-learning"]
+>>>>>>> adaptive_quiz_master_agent/adaptive_quiz_master_agent
+  }
+]

@@ -1,0 +1,26 @@
+supervisor:
+  host: 127.0.0.1
+  port: 8000
+  jwt_secret: "a-very-secret-key"
+  registry_file: ./config/registry.json
+  health_check_interval: 15
+  stm_size: 10
+
+gemini_wrapper:
+  host: 127.0.0.1
+  port: 5010
+  mode: "auto"  # auto -> cloud if env present else mock
+  external_api_url: "${GEMINI_API_URL}"
+  api_key_env: "GEMINI_API_KEY"
+
+<<<<<<< HEAD
+research_finder:
+  host: 127.0.0.1
+  port: 5012
+
+=======
+adaptive_quiz_master:
+  host: 127.0.0.1
+  port: 5020
+  question_bank_path: "./agents/adaptive_quiz_master/question_bank.json"
+>>>>>>> adaptive_quiz_master_agent/adaptive_quiz_master_agent
