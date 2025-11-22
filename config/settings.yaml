@@ -13,6 +13,11 @@ gemini_wrapper:
   external_api_url: "${GEMINI_API_URL}"
   api_key_env: "GEMINI_API_KEY"
 
+adaptive_quiz_master:
+  host: 127.0.0.1
+  port: 5020
+  question_bank_path: "./agents/adaptive_quiz_master/question_bank.json"
+
 research_finder:
   host: 127.0.0.1
   port: 5012
