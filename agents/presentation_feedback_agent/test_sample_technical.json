@@ -1,0 +1,31 @@
+{
+  "message_id": "test_technical",
+  "sender": "test_user",
+  "recipient": "presentation_feedback_agent",
+  "type": "task_assignment",
+  "task": {
+    "name": "analyze_presentation",
+    "parameters": {
+      "data": {
+        "presentation_id": "PRES-TECHNICAL-001",
+        "title": "Implementing Microservices Architecture with Kubernetes",
+        "presenter_name": "David Park",
+        "transcript": "Today I'll walk you through our migration from monolithic architecture to microservices using Kubernetes. First, let's examine the architecture. We decomposed our monolith into 15 microservices, each running in Docker containers orchestrated by Kubernetes. The API gateway handles routing using Kong, implementing rate limiting at 1000 requests per minute. For service discovery, we use Consul with health checks every 30 seconds. The database layer employs the saga pattern for distributed transactions, ensuring eventual consistency. Our observability stack includes Prometheus for metrics, Grafana for visualization, and Jaeger for distributed tracing. We encountered three main challenges during migration. First, managing inter-service communication required implementing circuit breakers using Hystrix. Second, data consistency across services needed careful transaction boundary design. Third, deployment complexity increased exponentially, requiring GitOps workflows with ArgoCD. Performance improvements were significant: response times decreased from 800ms to 120ms, and we achieved 99.95% uptime. The infrastructure costs initially increased by 40% but stabilized at 15% above previous levels. Key lessons learned include starting with fewer services, investing in monitoring early, and maintaining comprehensive API documentation.",
+        "metadata": {
+          "language": "en",
+          "duration_minutes": 12,
+          "target_audience": "software engineers",
+          "presentation_type": "technical",
+          "visuals_used": true,
+          "slides_count": 20,
+          "recording_quality": "good"
+        },
+        "analysis_parameters": {
+          "focus_areas": ["clarity", "pacing", "engagement", "material_relevance", "structure"],
+          "detail_level": "high"
+        }
+      }
+    }
+  },
+  "timestamp": "2025-11-23T16:30:00.000Z"
+}

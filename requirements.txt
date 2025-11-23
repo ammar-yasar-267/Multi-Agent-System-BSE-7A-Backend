@@ -8,8 +8,9 @@ pyjwt
 httpx
 PyYAML
 pytest
+pytest-asyncio
 requests
 aiosqlite
 google-generativeai
+python-dotenv
 dotenv
-

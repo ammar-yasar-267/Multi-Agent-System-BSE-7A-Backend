@@ -1,0 +1,31 @@
+{
+  "message_id": "test_poor",
+  "sender": "test_user",
+  "recipient": "presentation_feedback_agent",
+  "type": "task_assignment",
+  "task": {
+    "name": "analyze_presentation",
+    "parameters": {
+      "data": {
+        "presentation_id": "PRES-POOR-001",
+        "title": "Introduction to Quantum Computing",
+        "presenter_name": "Sarah Johnson",
+        "transcript": "Um, hi everyone. So, like, I'm going to talk about quantum computing today. It's, uh, really complicated but, you know, I'll try to explain it. So, quantum computers are, like, different from regular computers. They use qubits instead of bits. Um, bits are either 0 or 1, but qubits can be, uh, both at the same time? It's called superposition or something. And there's also this thing called, um, entanglement. It's when, like, particles are connected somehow. I'm not really sure how it works, but it's important. Companies like IBM and Google are working on quantum computers. They're really expensive though. Like, millions of dollars. Um, they can solve certain problems faster than normal computers. Things like, uh, cryptography and stuff. I think they're going to change everything in the future, but I don't know when. That's basically it. Any questions?",
+        "metadata": {
+          "language": "en",
+          "duration_minutes": 5,
+          "target_audience": "general audience",
+          "presentation_type": "informative",
+          "visuals_used": false,
+          "slides_count": 8,
+          "recording_quality": "fair"
+        },
+        "analysis_parameters": {
+          "focus_areas": ["clarity", "pacing", "engagement", "material_relevance", "structure"],
+          "detail_level": "high"
+        }
+      }
+    }
+  },
+  "timestamp": "2025-11-23T16:30:00.000Z"
+}

@@ -1,0 +1,31 @@
+{
+  "message_id": "test_confident",
+  "sender": "test_user",
+  "recipient": "presentation_feedback_agent",
+  "type": "task_assignment",
+  "task": {
+    "name": "analyze_presentation",
+    "parameters": {
+      "data": {
+        "presentation_id": "PRES-CONFIDENT-001",
+        "title": "Blockchain Technology in Supply Chain Management",
+        "presenter_name": "Michael Chen",
+        "transcript": "Good afternoon everyone. Today I will demonstrate how blockchain technology revolutionizes supply chain management. Blockchain creates an immutable ledger of transactions, enabling real-time tracking of goods from manufacturer to consumer. Companies like Walmart and Maersk have implemented blockchain solutions, reducing paperwork by 80% and cutting transit times by 40%. The technology provides three key benefits: transparency through distributed ledgers, security via cryptographic hashing, and efficiency by automating smart contracts. Implementation challenges include legacy system integration, regulatory compliance, and industry standardization. However, the ROI typically manifests within 18 months, with cost reductions averaging 15-20% across logistics operations. To conclude, blockchain represents a fundamental shift in how we manage supply chains, moving from centralized databases to distributed trust networks.",
+        "metadata": {
+          "language": "en",
+          "duration_minutes": 8,
+          "target_audience": "business executives",
+          "presentation_type": "business",
+          "visuals_used": true,
+          "slides_count": 12,
+          "recording_quality": "excellent"
+        },
+        "analysis_parameters": {
+          "focus_areas": ["clarity", "pacing", "engagement", "material_relevance", "structure"],
+          "detail_level": "high"
+        }
+      }
+    }
+  },
+  "timestamp": "2025-11-23T16:30:00.000Z"
+}

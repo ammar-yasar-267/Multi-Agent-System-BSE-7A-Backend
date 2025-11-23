@@ -22,3 +22,11 @@ research_finder:
   host: 127.0.0.1
   port: 5012
 
+presentation_feedback:
+  host: 127.0.0.1
+  port: 5019
+  mode: "auto"  # auto -> cloud if env present else mock
+  api_key_env: "GEMINI_API_KEY"
+  ltm_db_path: "./agents/presentation_feedback_agent/ltm_cache.db"
+  model_name: "gemini-2.5-flash"
+

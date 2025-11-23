@@ -20,9 +20,9 @@ def test_process_mock_request():
         recipient="gemini-wrapper",
         task=task
     )
-    
-    response = client.post("/process", json=envelope.dict())
-    
+
+    response = client.post("/process", json=envelope.model_dump(mode='json'))
+
     assert response.status_code == 200
     report = response.json()
     assert report["status"] == "SUCCESS"
